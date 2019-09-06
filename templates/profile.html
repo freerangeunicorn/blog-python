@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+<!-- <a href='{{url_for('logout')}}'>LOG OUT</a> -->
+
+<div class="card">
+  <img src="https://images-na.ssl-images-amazon.com/images/I/41kG%2BQzuHML.jpg" style="width:100%", "height="50%">
+  <h1>{{current_user.first_name}} {{current_user.last_name}} </h1>
+  <p class="title">{{current_user.email}}</p>
+  <p>Coderschool</p>
+  <a href="#"><i class="fa fa-dribbble"></i></a> 
+  <a href="#"><i class="fa fa-twitter"></i></a> 
+  <a href="#"><i class="fa fa-linkedin"></i></a> 
+  <a href="#"><i class="fa fa-facebook"></i></a> 
+  <p><button>Contact</button></p>
+</div>
+{% endblock %}
