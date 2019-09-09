@@ -8,7 +8,18 @@
   </style>
 {% endblock %}
 {% block content %}
-  <h1>Index</h1>
+<div class="container text-center">
+  <form class="form-flag" method="POST">
+     <h1>{{data.title}}</h1> 
+      <p>{{data.body}}</p>
+      <p>{{data.author_name}}</p>
+      <p>{{data.created_on}}</p>
+      <p>{{data.view_count}}</p>
   <p class="important">
-    Welcome on my awesome homepage.
+    </div>
+    <!-- <button onclick="report()" class="btn btn-lg btn-primary btn-block" type="submit">Report</button> -->
+    <button type='button' onclick="window.location.href='{{url_for('report', post_id=data.id )}}'" class="btn btn-lg btn-primary btn-block" type="submit">Report</button>
+    <p class="mt-5 mb-3 text-muted">&copy; 2017-2019</p>
+  </form>
+  
 {% endblock %}

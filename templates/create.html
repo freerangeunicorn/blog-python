@@ -10,11 +10,13 @@
 {% block content %}
 <div class="container">
   <h1>Create post</h1>
-  <form method="POST" action="/">
-    {{ form.csrf_token }}
-    {{ form.title.label }} {{ form.title(size=20) }}
-    {{ form.body }} {{ form.author_name }} {{ form.submit }}
-    <input type="submit">
+  <form method="POST">
+  {{ form.hidden_tag()}}
+  {{ form.title.label }} {{ form.title(size=20)}}
+  {{ form.body.label }} {{ form.body(size=20)}}
+  {{ form.author_name.label }} {{ form.author_name(size=20)}}
+    {{form.submit()}}
+
 </form>
 </div>
 {% endblock %}
