@@ -33,10 +33,12 @@ class Post(db.Model):
   title = db.Column(db.String)
   body = db.Column (db.String,nullable=False)
   author_name=db.Column(db.String(50),default='anonymous',nullable=False)
+  user_id =  db.Column(db.Integer, db.ForeignKey('user.id'))
   created_on = db.Column(db.DateTime, default=db.func.now())
   updated_on = db.Column(db.DateTime, default=db.func.now())
   view_count = db.Column(db.Integer, default=0)
   flags = db.relationship('Flags', backref="post", lazy="dynamic")
+  comments = db.relationship('Comments', backref="post", lazy="dynamic")
 
 
 class User(UserMixin, db.Model):
@@ -46,6 +48,8 @@ class User(UserMixin, db.Model):
   email = db.Column(db.String(120), index=True, unique=True)
   password_hash = db.Column(db.String(120), nullable=False)
   flags = db.relationship('Flags', backref="user", lazy="dynamic")
+  comments = db.relationship('Comments', backref="user", lazy="dynamic")
+  posts = db.relationship('Post', backref="user", lazy="dynamic")
   def set_password(self, password):
     self.password_hash = generate_password_hash(password)
 
@@ -57,6 +61,13 @@ class Flags(db.Model):
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
   post_id =  db.Column(db.Integer, db.ForeignKey('post.id'))
 
+class Comments(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  body = db.Column (db.String,nullable=False)
+  created_on = db.Column(db.DateTime, default=db.func.now())
+  updated_on = db.Column(db.DateTime, default=db.func.now())
+  user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+  post_id =  db.Column(db.Integer, db.ForeignKey('post.id'))
 
 db.create_all()
 
@@ -66,6 +77,10 @@ class NewForm(FlaskForm):
   body=StringField('Text', validators=[DataRequired()])
   author_name=StringField('Name', validators=[DataRequired()])
   submit=SubmitField('Create Post')
+
+class CommentForm(FlaskForm):
+  body=StringField('Text', validators=[DataRequired()])
+  submit=SubmitField('Comment§')
 
 
 
@@ -77,15 +92,33 @@ def load_user(id):
 @app.route('/')
 def hello_world():
     
-    return redirect(url_for('profile'))
+    return render_template('blogtemplate.html')
 
-@app.route('/posts/<int:post_id>')
+@app.route('/posts')
+def all_posts():
+  posts=Post.query.all()
+  return render_template('allposts.html', posts=posts)
+
+
+@app.route('/posts/<int:post_id>', methods=['POST', 'GET'])
+@login_required
 def posts(post_id):
   data=Post.query.filter_by(id=post_id).first()
   check=Post.query.filter_by(id=post_id).first()
   check.view_count += 1
   db.session.commit()
-  return render_template('posts.html', data=data)
+
+  form=CommentForm()
+  if request.method == 'POST':
+     if form.validate_on_submit():
+      comment = Comments(body=form.body.data,
+                        user_id=current_user.id,
+                        post_id=post_id,
+                        )
+      db.session.add(comment)
+      db.session.commit()
+      return redirect (url_for('posts',post_id=post_id))
+  return render_template('posts.html', data=data, form=form)
 
 @app.route('/repost/<post_id>')
 def report(post_id):
@@ -104,7 +137,8 @@ def create_post():
     if form.validate_on_submit():
       new_post = Post(title=form.title.data,
                         body=form.body.data,
-                        author_name=form.author_name.data)
+                        author_name=form.author_name.data,
+                        user_id=current_user.id)
       db.session.add(new_post)
       db.session.commit()
       return redirect(url_for('posts'))

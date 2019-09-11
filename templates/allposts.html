@@ -1,0 +1,26 @@
+{% extends "layout.html" %} {% block content %}
+<!-- <a href='{{url_for('logout')}}'>LOG OUT</a> -->
+
+<form>
+  <h1>POSTS</h1>
+  <ul>
+    {% for post in posts %}
+    <li>
+      <div class="card">
+        <img class="card-img-top" src="..." alt="Card image cap" />
+        <div class="card-body">
+          <h5 class="card-title"><a href="{{url_for('posts',post_id=post.id)}}">{{ post.title }}</a></h5>
+          <p class="card-text">
+            {{ post.author_name }}
+             {{ post.body }}
+          </p>
+        </div>
+        <div class="card-footer">
+          <small class="text-muted">{{ post.created_on }}</small>
+        </div>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</form>
+{% endblock %}

@@ -2,20 +2,24 @@
 
 {% block title %}Index{% endblock %}
 {% block head %}
-  {{ super() }}
+
+
   <style type="text/css">
     .important { color: #336699; }
   </style>
 {% endblock %}
 {% block content %}
+
 <div class="container">
   <h1>Create post</h1>
   <form method="POST">
   {{ form.hidden_tag()}}
-  {{ form.title.label }} {{ form.title(size=20)}}
+
+
+      {{ form.title.label(class='form-text text-muted') }} {{form.title(size=20)}}
   {{ form.body.label }} {{ form.body(size=20)}}
   {{ form.author_name.label }} {{ form.author_name(size=20)}}
-    {{form.submit()}}
+    {{form.submit(class='btn btn-primary')}}
 
 </form>
 </div>
